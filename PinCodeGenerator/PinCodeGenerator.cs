@@ -1,83 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace PinCodeGenerator
 {
+    internal class PinCodeCollection
+    { 
+        
+        public PinCodeCollection()
+        {
+            
+        }
+        
+        
+    }
+    
     internal class PinCodeGenerator
     {
-        private readonly PinCodeSettings _pinCodeSettings;
+        private readonly IRandomNumberGenerator _randomNumberGenerator;
         private readonly IPinCodeValidator _pinCodeValidator;
-        private readonly IBatchValidator _batchValidator;
 
-        public PinCodeGenerator(PinCodeSettings pinCodeSettings, IPinCodeValidator pinCodeValidator, IBatchValidator batchValidator)
+        public PinCodeGenerator(Func<int, int, IRandomNumberGenerator> randomNumberGeneratorFactory, IPinCodeValidator pinCodeValidator)
         {
-            _pinCodeSettings = pinCodeSettings;
+            _randomNumberGenerator = randomNumberGeneratorFactory(0, 9);
             _pinCodeValidator = pinCodeValidator;
-            _batchValidator = batchValidator;
         }
 
-        public IEnumerable<string> GeneratorPinCodes(int batchSize)
+        public IEnumerable<PinCode> GeneratorPinCodes(int batchSize)
         {
-            var generatorPinCodes = new List<string>();
+            var generatorPinCodes = new Dictionary<string, PinCode>();
             if (batchSize <= 0)
             {
-                return generatorPinCodes;
+                return generatorPinCodes.Values;
             }
-
-            var random = new Random();
 
             int i = 0;
             do
             {
-                string pinCode = GeneratePinCode(random);
+                PinCode pinCode = GeneratePinCode();
                 if (_pinCodeValidator.IsPinCodeValid(pinCode))
                 {
-                    if (!generatorPinCodes.Contains(pinCode))
+                    if (!generatorPinCodes.ContainsKey(pinCode.ToString()))
                     {
                         i++;
-                        generatorPinCodes.Add(pinCode);
-
+                        generatorPinCodes.Add(pinCode.ToString(), pinCode);
                     }
                 }
             } while (i < batchSize);
-
-//            bool batchIsValid = false;
-//            do
-//            {
-//                IEnumerable<string> duplicatedValues;
-//                batchIsValid = _batchValidator.IsBatchValid(generatorPinCodes, out duplicatedValues);
-//
-//                foreach (var duplicatedValue in duplicatedValues)
-//                {
-//                    generatorPinCodes.Remove(duplicatedValue);
-//                }
-//
-//                int removedItems = 0;
-//                do
-//                {
-//                    string pinCode = GeneratePinCode(random);
-//                    if (_pinCodeValidator.IsPinCodeValid(pinCode.ToString()))
-//                    {
-//                        removedItems++;
-//                        generatorPinCodes.Add(pinCode);
-//                    }
-//                } while (removedItems < duplicatedValues.Count());
-//                
-//            } while (!batchIsValid);
-            return generatorPinCodes;
+            return generatorPinCodes.Values;
         }
 
-        private string GeneratePinCode(Random random)
+        private PinCode GeneratePinCode()
         {
             var pinCode = new StringBuilder();
-            for (int j = 0; j < _pinCodeSettings.Length; j++)
+            for (int j = 0; j < 4; j++)
             {
-                int pinCodeVal = random.Next(0, 9);
+                int pinCodeVal = _randomNumberGenerator.Next();
                 pinCode.Append(pinCodeVal);
             }
-            return pinCode.ToString();
+            
+            // TODO: Can be converted to IoC
+            return new PinCode(pinCode.ToString());
         }
     }
 }

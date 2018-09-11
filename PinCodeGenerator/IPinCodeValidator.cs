@@ -2,6 +2,6 @@
 {
     internal interface IPinCodeValidator
     {
-        bool IsPinCodeValid(string pinCode);
+        bool IsPinCodeValid(PinCode pinCode);
     }
 }

@@ -10,12 +10,11 @@
       <e p="PinCode.sln" t="IncludeFlat" />
       <e p="PinCodeGenerator" t="IncludeRecursive">
         <e p="AssemblyInfo.cs" t="Include" />
-        <e p="BatchValidator.cs" t="Include" />
         <e p="bin" t="ExcludeRecursive" />
-        <e p="IBatchValidator.cs" t="Include" />
         <e p="ILogger.cs" t="Include" />
         <e p="IPinCodeGenerator.cs" t="Include" />
         <e p="IPinCodeValidator.cs" t="Include" />
+        <e p="IRandomNumberGenerator.cs" t="Include" />
         <e p="Logger.cs" t="Include" />
         <e p="obj" t="ExcludeRecursive">
           <e p="Debug" t="Include">
@@ -24,14 +23,13 @@
             </e>
           </e>
         </e>
+        <e p="PinCode.cs" t="Include" />
         <e p="PinCodeGenerator.cs" t="Include" />
         <e p="PinCodeGenerator.csproj" t="IncludeRecursive" />
-        <e p="PinCodeSettings.cs" t="Include" />
-        <e p="PinCodeValidationException.cs" t="Include" />
         <e p="PinCodeValidator.cs" t="Include" />
+        <e p="RandomNumberGenerator.cs" t="Include" />
       </e>
       <e p="PinCodeGenerator.UnitTests" t="IncludeRecursive">
-        <e p="batch_validator.cs" t="Include" />
         <e p="bin" t="ExcludeRecursive" />
         <e p="obj" t="ExcludeRecursive">
           <e p="Debug" t="Include">
@@ -41,6 +39,8 @@
             </e>
           </e>
         </e>
+        <e p="pin_code.cs" t="Include" />
+        <e p="pin_code_generator.cs" t="Include" />
         <e p="pin_code_validator.cs" t="Include" />
         <e p="PinCodeGenerator.UnitTests.csproj" t="IncludeRecursive" />
       </e>

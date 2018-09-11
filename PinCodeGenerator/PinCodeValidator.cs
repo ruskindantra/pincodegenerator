@@ -1,47 +1,38 @@
-﻿using System;
-
-namespace PinCodeGenerator
+﻿namespace PinCodeGenerator
 {
     internal class PinCodeValidator : IPinCodeValidator
     {
         private readonly ILogger _logger;
-        private readonly PinCodeSettings _pinCodeSettings;
 
-        public PinCodeValidator(ILogger logger, PinCodeSettings pinCodeSettings)
+        public PinCodeValidator(ILogger logger)
         {
             _logger = logger;
-            _pinCodeSettings = pinCodeSettings;
         }
 
-        public bool IsPinCodeValid(string pinCode)
+        public bool IsPinCodeValid(PinCode pinCode)
         {
-            if (pinCode.ToString().Length != _pinCodeSettings.Length)
+            int? firstValue = null;
+            for (int i = 0; i < pinCode.ToString().Length; i++)
             {
-                return false;
-            }
-
-            char? firstValue = null;
-            for (int i = 0; i < pinCode.Length; i++)
-            {
-                char pinCodeCharacter = pinCode[i];
+                int pinCodeUnit = pinCode.AsParts()[i];
                 if (firstValue == null)
                 {
-                    firstValue = pinCodeCharacter;
+                    firstValue = pinCodeUnit;
                     continue;
                 }
 
-                if (firstValue == pinCodeCharacter)
+                if (firstValue == pinCodeUnit)
                 {
                     _logger.Warn("Two consecutive values found, pincode is not valid");
                     return false;
                 }
 
                 int prevPinCodeValue = int.Parse(firstValue.ToString());
-                int pinCodeValue = int.Parse(pinCodeCharacter.ToString());
+                int pinCodeValue = int.Parse(pinCodeUnit.ToString());
                 if (prevPinCodeValue == pinCodeValue - 1 && i != pinCode.ToString().Length - 1)
                 {
                     _logger.Warn("Two consecutive sequential values found");
-                    int nextValue = pinCode[i + 1];
+                    int nextValue = pinCode.AsParts()[i + 1];
                     if (pinCodeValue == nextValue - 1)
                     {                    
                         _logger.Warn("Three consecutive sequential values found");
