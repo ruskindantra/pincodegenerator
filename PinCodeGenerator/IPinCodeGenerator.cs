@@ -2,6 +2,6 @@
 {
     public interface IPinCodeGenerator
     {
-        
+        IPinCodeCollection Generate(int batchSize);
     }
 }

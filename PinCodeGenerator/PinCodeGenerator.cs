@@ -1,53 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace PinCodeGenerator
 {
-    internal class PinCodeCollection
-    { 
-        
-        public PinCodeCollection()
-        {
-            
-        }
-        
-        
-    }
-    
-    internal class PinCodeGenerator
+    internal class PinCodeGenerator : IPinCodeGenerator
     {
         private readonly IRandomNumberGenerator _randomNumberGenerator;
         private readonly IPinCodeValidator _pinCodeValidator;
+        private readonly Func<IPinCodeCollection> _pinCodeCollectionFactory;
 
-        public PinCodeGenerator(Func<int, int, IRandomNumberGenerator> randomNumberGeneratorFactory, IPinCodeValidator pinCodeValidator)
+        public PinCodeGenerator(Func<int, int, IRandomNumberGenerator> randomNumberGeneratorFactory, IPinCodeValidator pinCodeValidator, Func<IPinCodeCollection> pinCodeCollectionFactory)
         {
             _randomNumberGenerator = randomNumberGeneratorFactory(0, 9);
             _pinCodeValidator = pinCodeValidator;
+            _pinCodeCollectionFactory = pinCodeCollectionFactory;
         }
 
-        public IEnumerable<PinCode> GeneratorPinCodes(int batchSize)
+        public IPinCodeCollection Generate(int batchSize)
         {
-            var generatorPinCodes = new Dictionary<string, PinCode>();
+            var pinCodeCollection = _pinCodeCollectionFactory();
             if (batchSize <= 0)
             {
-                return generatorPinCodes.Values;
+                return pinCodeCollection;
             }
 
-            int i = 0;
+            var i = 0;
             do
             {
                 PinCode pinCode = GeneratePinCode();
                 if (_pinCodeValidator.IsPinCodeValid(pinCode))
                 {
-                    if (!generatorPinCodes.ContainsKey(pinCode.ToString()))
+                    if (pinCodeCollection.Add(pinCode))
                     {
                         i++;
-                        generatorPinCodes.Add(pinCode.ToString(), pinCode);
                     }
                 }
             } while (i < batchSize);
-            return generatorPinCodes.Values;
+            return pinCodeCollection;
         }
 
         private PinCode GeneratePinCode()
